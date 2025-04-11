@@ -33,28 +33,49 @@ export async function POST(request: NextRequest) {
       };
     }
     
+    console.log('Sending registration request to:', `${API_URL}/api/v1/register`);
+    console.log('Request body:', JSON.stringify(requestBody));
+    
     const response = await fetch(`${API_URL}/api/v1/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(requestBody),
     });
     
-    const data = await response.json();
+    console.log('Registration response status:', response.status);
     
     if (!response.ok) {
+      let errorMessage = 'Falha no registro';
+      let errorDetails = {};
+      
+      try {
+        const errorData = await response.json();
+        console.log('Error response data:', errorData);
+        errorMessage = errorData.status?.message || errorMessage;
+        errorDetails = errorData.errors || {};
+      } catch (e) {
+        const errorText = await response.text();
+        console.error('Failed to parse error response as JSON:', errorText);
+      }
+      
       return NextResponse.json(
-        { error: data.status?.message || 'Falha no registro', errors: data.errors },
+        { error: errorMessage, errors: errorDetails },
         { status: response.status }
       );
     }
     
-    const authToken = response.headers.get('Authorization') || data.data.token;
+    const data = await response.json();
+    console.log('Registration success data:', data);
+    
+    const authToken = response.headers.get('Authorization') || data.data?.token;
     
     return NextResponse.json(
       { 
-        user: data.data.user,
+        user: data.data?.user,
         token: authToken
       },
       { 
