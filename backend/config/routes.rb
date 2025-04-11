@@ -23,6 +23,8 @@ Rails.application.routes.draw do
       
       resources :users, only: [:show, :update]
       
+      get '/auth/me', to: 'users#me'
+      
       resources :providers, only: [:index, :show] do
         member do
           get :availability
