@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (userData: any, userType: 'patient' | 'provider') => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/register', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
