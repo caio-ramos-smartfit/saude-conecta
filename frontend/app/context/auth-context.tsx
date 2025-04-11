@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth');
+        const response = await fetch('/api/auth/me');
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
@@ -47,12 +47,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string, userType: 'patient' | 'provider') => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, userType }),
       });
 
       if (!response.ok) {
@@ -110,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth', {
+      await fetch('/api/auth/logout', {
         method: 'DELETE',
       });
       setUser(null);
