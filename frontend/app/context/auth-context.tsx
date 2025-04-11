@@ -1,0 +1,145 @@
+"use client"
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface User {
+  id: string;
+  email: string;
+  user_type: 'patient' | 'provider';
+  profile?: any;
+}
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string, userType: 'patient' | 'provider') => Promise<void>;
+  register: (userData: any, userType: 'patient' | 'provider') => Promise<void>;
+  logout: () => Promise<void>;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const login = async (email: string, password: string, userType: 'patient' | 'provider') => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Falha na autenticação');
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+
+      if (data.user.user_type === 'patient') {
+        router.push('/patient/dashboard');
+      } else {
+        router.push('/providers/dashboard');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (userData: any, userType: 'patient' | 'provider') => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...userData, userType }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Falha no registro');
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+
+      if (data.user.user_type === 'patient') {
+        router.push('/patient/dashboard');
+      } else {
+        router.push('/providers/dashboard');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetch('/api/auth', {
+        method: 'DELETE',
+      });
+      setUser(null);
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
