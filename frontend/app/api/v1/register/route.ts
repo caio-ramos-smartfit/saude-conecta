@@ -41,27 +41,15 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(requestBody),
     });
     
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        console.error('Failed to parse error response as JSON:', errorText);
-        return NextResponse.json(
-          { error: 'Falha no registro - resposta inválida do servidor' },
-          { status: response.status }
-        );
-      }
-      
       return NextResponse.json(
-        { error: errorData.status?.message || 'Falha no registro', errors: errorData.errors },
+        { error: data.status?.message || 'Falha no registro', errors: data.errors },
         { status: response.status }
       );
     }
     
-    const data = await response.json();
     const authToken = response.headers.get('Authorization') || data.data.token;
     
     return NextResponse.json(
