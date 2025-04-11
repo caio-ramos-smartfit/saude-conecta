@@ -41,6 +41,9 @@ module HealthcareApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore
+    
     if Rails.env.development? || Rails.env.test?
       config.secret_key_base = 'supersecretkey123supersecretkey123supersecretkey123supersecretkey123'
     end

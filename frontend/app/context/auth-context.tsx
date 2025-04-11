@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('Registering user with data:', { ...userData, userType });
       
-      const response = await fetch('/api/v1/register', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
