@@ -79,20 +79,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (userData: any, userType: 'patient' | 'provider') => {
     setLoading(true);
     try {
-      const response = await fetch('/api/register', {
+      console.log('Registering user with data:', { ...userData, userType });
+      
+      const response = await fetch('/api/v1/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ ...userData, userType }),
       });
 
+      console.log('Registration response status:', response.status);
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Falha no registro');
+        let errorMessage = 'Falha no registro';
+        let errorDetails = {};
+        
+        try {
+          const errorData = await response.json();
+          console.log('Error response data:', errorData);
+          errorMessage = errorData.error || errorData.status?.message || errorMessage;
+          errorDetails = errorData.errors || {};
+        } catch (e) {
+          const errorText = await response.text();
+          console.error('Failed to parse error response as JSON:', errorText);
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log('Registration success data:', data);
+      
       setUser(data.user);
 
       if (data.user.user_type === 'patient') {
