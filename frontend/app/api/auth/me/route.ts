@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
       }
     }
     
+    console.log('Auth token from cookies or headers:', authToken ? 'Token present' : 'No token');
+    
     if (!authToken) {
       console.log('No auth token found in cookies or headers');
       return NextResponse.json(
@@ -21,10 +23,10 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    console.log('Sending auth/me request to:', `${API_URL}/api/v1/users/me`);
+    console.log('Sending auth/me request to:', `${API_URL}/api/v1/auth/me`);
     console.log('Auth token being sent:', authToken ? 'Token present' : 'No token');
     
-    const response = await fetch(`${API_URL}/api/v1/users/me`, {
+    const response = await fetch(`${API_URL}/api/v1/auth/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
