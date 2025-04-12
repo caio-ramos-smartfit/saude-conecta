@@ -47,23 +47,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string, userType: 'patient' | 'provider') => {
     setLoading(true);
     try {
+      console.log('Sending login request with:', { email, userType });
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password, userType }),
       });
+      
+      console.log('Login response status:', response.status);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Falha na autenticação');
+      let responseData;
+      try {
+        responseData = await response.json();
+        console.log('Login response data:', responseData);
+      } catch (e) {
+        const errorText = await response.text();
+        console.error('Failed to parse response as JSON:', errorText);
+        throw new Error('Falha na autenticação: resposta inválida do servidor');
       }
 
-      const data = await response.json();
-      setUser(data.user);
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Falha na autenticação');
+      }
 
-      if (data.user.user_type === 'patient') {
+      setUser(responseData.user);
+
+      if (responseData.user.user_type === 'patient') {
         router.push('/patient/dashboard');
       } else {
         router.push('/providers/dashboard');
