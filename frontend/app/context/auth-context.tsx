@@ -170,6 +170,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Registration success data:', data);
       
       const userData = data.data?.user || data.user;
+      const token = data.token || data.data?.token;
+      
+      console.log('Setting user data after registration:', userData);
+      console.log('Token received after registration:', token ? 'Token present' : 'No token');
+      
+      if (token) {
+        console.log('Storing auth token in localStorage');
+        localStorage.setItem('auth_token', token);
+      } else {
+        console.warn('No token received after registration');
+      }
+      
       setUser(userData);
 
       if (!userData) {
@@ -177,11 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Dados de usuário não encontrados na resposta');
       }
 
-      if (userData.user_type === 'patient') {
-        router.push('/patient/dashboard');
-      } else {
-        router.push('/providers/dashboard');
-      }
+      router.push('/providers/dashboard');
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
