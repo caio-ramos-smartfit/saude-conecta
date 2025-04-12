@@ -54,6 +54,9 @@ export async function POST(request: NextRequest) {
     }
     
     console.log('Auth token extracted:', authToken ? 'Token found' : 'No token found');
+    console.log('Full token value:', authToken);
+    console.log('Full response headers:', Object.fromEntries([...response.headers.entries()]));
+    console.log('Full response data:', data);
     
     const userData = data.data?.user || data.user;
     
