@@ -30,7 +30,7 @@ export default function LoginPage() {
     setIsLoading(true)
     
     try {
-      await login(patientEmail, patientPassword, 'patient')
+      await login(patientEmail, patientPassword)
       toast({
         title: "Login realizado com sucesso",
         description: "Você será redirecionado para o painel do paciente.",
@@ -53,7 +53,7 @@ export default function LoginPage() {
     setIsLoading(true)
     
     try {
-      await login(providerEmail, providerPassword, 'provider')
+      await login(providerEmail, providerPassword)
       toast({
         title: "Login realizado com sucesso",
         description: "Você será redirecionado para o painel do profissional.",
