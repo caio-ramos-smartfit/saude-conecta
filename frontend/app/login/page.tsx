@@ -29,6 +29,7 @@ export default function LoginPage() {
     
     try {
       console.log('Attempting login with:', { email, password })
+      console.log('Using login endpoint from auth-context')
       await login(email, password)
       toast({
         title: "Login realizado com sucesso",
