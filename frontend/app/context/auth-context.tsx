@@ -68,9 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       console.log('Sending login request with:', { email, password });
-      console.log('Login endpoint URL:', '/api/auth/login');
+      console.log('Login endpoint URL:', '/api/auth/login-api');
       
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/login-api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
