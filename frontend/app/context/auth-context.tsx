@@ -29,13 +29,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me');
+        const token = localStorage.getItem('auth_token');
+        
+        if (!token) {
+          console.log('No auth token found in localStorage');
+          setLoading(false);
+          return;
+        }
+        
+        console.log('Checking authentication with stored token');
+        
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
         if (response.ok) {
           const userData = await response.json();
+          console.log('User data retrieved:', userData);
           setUser(userData);
+        } else {
+          console.log('Auth check failed with status:', response.status);
+          localStorage.removeItem('auth_token');
         }
       } catch (error) {
         console.error('Error checking authentication:', error);
+        localStorage.removeItem('auth_token');
       } finally {
         setLoading(false);
       }
@@ -81,10 +101,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const userData = responseData.data?.user || responseData.user;
+      const token = responseData.token;
       
       if (!userData) {
         console.error('No user data found in response:', responseData);
         throw new Error('Dados de usuário não encontrados na resposta');
+      }
+      
+      console.log('Setting user data:', userData);
+      console.log('Token received:', token ? 'Token present' : 'No token');
+      
+      if (token) {
+        localStorage.setItem('auth_token', token);
       }
       
       setUser(userData);
