@@ -38,10 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         
         console.log('Checking authentication with stored token');
+        console.log('Token value:', token);
         
         const response = await fetch('/api/auth/me', {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
           }
         });
         
@@ -208,6 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await fetch('/api/auth/logout', {
         method: 'DELETE',
       });
+      localStorage.removeItem('auth_token');
       setUser(null);
       router.push('/');
     } catch (error) {
