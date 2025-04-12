@@ -29,6 +29,7 @@ Rails.application.routes.draw do
         member do
           get :availability
         end
+        resources :availabilities
       end
       
       resources :appointments
