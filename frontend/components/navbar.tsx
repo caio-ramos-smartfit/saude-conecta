@@ -22,6 +22,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const isActive = (path: string) => pathname === path
+  const isHomePage = pathname === "/"
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
@@ -61,30 +62,36 @@ export function Navbar() {
           >
             Início
           </Link>
-          <Link
-            href="#features"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("#features") ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            Recursos
-          </Link>
-          <Link
-            href="#how-it-works"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("#how-it-works") ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            Como Funciona
-          </Link>
-          <Link
-            href="#providers"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("#providers") ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            Para Profissionais
-          </Link>
+          
+          {isHomePage && (
+            <>
+              <Link
+                href="#features"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive("#features") ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                Recursos
+              </Link>
+              <Link
+                href="#how-it-works"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive("#how-it-works") ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                Como Funciona
+              </Link>
+              <Link
+                href="#providers"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive("#providers") ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                Para Profissionais
+              </Link>
+            </>
+          )}
+          
           <Link
             href="/search"
             className={`text-sm font-medium transition-colors hover:text-primary ${
@@ -173,33 +180,39 @@ export function Navbar() {
             >
               Início
             </Link>
-            <Link
-              href="#features"
-              className={`block py-2 text-base font-medium ${
-                isActive("#features") ? "text-primary" : "text-muted-foreground"
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Recursos
-            </Link>
-            <Link
-              href="#how-it-works"
-              className={`block py-2 text-base font-medium ${
-                isActive("#how-it-works") ? "text-primary" : "text-muted-foreground"
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Como Funciona
-            </Link>
-            <Link
-              href="#providers"
-              className={`block py-2 text-base font-medium ${
-                isActive("#providers") ? "text-primary" : "text-muted-foreground"
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Para Profissionais
-            </Link>
+            
+            {isHomePage && (
+              <>
+                <Link
+                  href="#features"
+                  className={`block py-2 text-base font-medium ${
+                    isActive("#features") ? "text-primary" : "text-muted-foreground"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Recursos
+                </Link>
+                <Link
+                  href="#how-it-works"
+                  className={`block py-2 text-base font-medium ${
+                    isActive("#how-it-works") ? "text-primary" : "text-muted-foreground"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Como Funciona
+                </Link>
+                <Link
+                  href="#providers"
+                  className={`block py-2 text-base font-medium ${
+                    isActive("#providers") ? "text-primary" : "text-muted-foreground"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Para Profissionais
+                </Link>
+              </>
+            )}
+            
             <Link
               href="/search"
               className={`block py-2 text-base font-medium ${
