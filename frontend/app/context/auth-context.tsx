@@ -13,7 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string, userType: 'patient' | 'provider') => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   register: (userData: any, userType: 'patient' | 'provider') => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -44,10 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string, userType: 'patient' | 'provider') => {
+  const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      console.log('Sending login request with:', { email, password, userType });
+      console.log('Sending login request with:', { email, password });
       
       const response = await fetch('/api/auth/login', {
         method: 'POST',
