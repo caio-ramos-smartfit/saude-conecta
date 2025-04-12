@@ -56,7 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          user: {
+            email,
+            password
+          }
+        }),
       });
       
       console.log('Login response status:', response.status);
