@@ -1,3 +1,4 @@
+
 version: '3.8'
 
 services:
@@ -20,15 +21,16 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/healthcare_platform_development
       RAILS_ENV: development
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-supersecretkey123}
+      RAILS_MASTER_KEY: supersecretkey123
+      SECRET_KEY_BASE: supersecretkey123supersecretkey123supersecretkey123supersecretkey123
+      JWT_SECRET_KEY: supersecretkey123
     ports:
       - "3000:3000"
     volumes:
       - ./backend:/rails
     user: root
     entrypoint: ["/rails/entrypoint.sh"]
-    command: bash -c "bundle install && bundle exec rails generate devise:install && bundle exec rails db:create db:migrate db:seed && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "cd /rails && bundle install && bundle exec rails db:create db:migrate && bundle exec rails s -b 0.0.0.0"
 
   frontend:
     build:
@@ -36,7 +38,7 @@ services:
     depends_on:
       - backend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://backend:3000
     ports:
       - "3001:3000"
     volumes:

@@ -64,21 +64,19 @@ Este documento apresenta um checklist detalhado das tabelas de banco de dados ne
   - ⬜ Belongs to: service
 
 ### 5. Availabilities (Disponibilidades)
-⬜ Implementar tabela para horários disponíveis
+✅ Implementar tabela para horários disponíveis
 - **Campos principais**: 
-  - ⬜ id
-  - ⬜ provider_id
-  - ⬜ date
-  - ⬜ start_time
-  - ⬜ end_time
-  - ⬜ duration
-  - ⬜ cost
-  - ⬜ is_booked
-  - ⬜ notes
-  - ⬜ created_at
-  - ⬜ updated_at
+  - ✅ id
+  - ✅ provider_id
+  - ✅ date
+  - ✅ start_time
+  - ✅ end_time
+  - ✅ is_available
+  - ✅ cost
+  - ✅ created_at
+  - ✅ updated_at
 - **Relacionamentos**:
-  - ⬜ Belongs to: provider
+  - ✅ Belongs to: provider
 
 ### 6. Services (Serviços)
 ⬜ Implementar tabela para serviços oferecidos
@@ -116,6 +114,13 @@ Este documento apresenta um checklist detalhado das tabelas de banco de dados ne
 - ✅ **Dashboard do Paciente** - Visão geral de consultas e recomendações
 - ✅ **Dashboard do Profissional** - Gerenciamento de disponibilidade e consultas
 - ✅ **Busca de Profissionais** - Filtro por especialidade, localização e custo
+
+### Componentes de Interface
+- ✅ **Navbar** - Implementar barra de navegação com:
+  - ✅ Opções "Cadastrar-se" e "Fazer login" para usuários não autenticados
+  - ✅ Menu de perfil com acesso a dados pessoais para usuários autenticados
+  - ✅ Opção de logout no menu de perfil
+- ✅ **Controle de Visibilidade** - Esconder botões de login/cadastro quando usuário estiver logado
 
 ### Páginas com Erros (404)
 - ⬜ **Perfil do Paciente** - `/patient/profile`

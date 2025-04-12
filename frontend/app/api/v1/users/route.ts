@@ -5,36 +5,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userType, ...userData } = body;
     
-    let requestBody: any = {
-      user: {
-        email: userData.email,
-        password: userData.password,
-        password_confirmation: userData.passwordConfirmation,
-        user_type: userType
-      }
-    };
-    
-    if (userType === 'patient') {
-      requestBody.patient = {
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        phone: userData.phone,
-        address: userData.address
-      };
-    } else if (userType === 'provider') {
-      requestBody.provider = {
-        organization_name: userData.organizationName,
-        contact_name: userData.contactName,
-        specialty: userData.specialty,
-        address: userData.address,
-        phone: userData.phone
-      };
-    }
-    
-    console.log('Sending registration request to:', `${API_URL}/api/v1/users`);
-    console.log('Request body:', JSON.stringify(requestBody));
+    console.log('Sending user registration request to:', `${API_URL}/api/v1/users`);
+    console.log('Request body:', JSON.stringify(body));
     
     const response = await fetch(`${API_URL}/api/v1/users`, {
       method: 'POST',
@@ -43,7 +16,7 @@ export async function POST(request: NextRequest) {
         'Accept': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(body),
     });
     
     console.log('Registration response status:', response.status);

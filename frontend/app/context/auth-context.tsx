@@ -13,7 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string, userType: 'patient' | 'provider') => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   register: (userData: any, userType: 'patient' | 'provider') => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -29,13 +29,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth');
+        const token = localStorage.getItem('auth_token');
+        
+        if (!token) {
+          console.log('No auth token found in localStorage');
+          setLoading(false);
+          return;
+        }
+        
+        console.log('Checking authentication with stored token');
+        
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
         if (response.ok) {
           const userData = await response.json();
+          console.log('User data retrieved:', userData);
           setUser(userData);
+        } else {
+          console.log('Auth check failed with status:', response.status);
+          localStorage.removeItem('auth_token');
         }
       } catch (error) {
         console.error('Error checking authentication:', error);
+        localStorage.removeItem('auth_token');
       } finally {
         setLoading(false);
       }
@@ -44,26 +64,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string, userType: 'patient' | 'provider') => {
+  const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth', {
+      console.log('Sending login request with:', { email, password });
+      console.log('Login endpoint URL:', '/api/auth/login');
+      
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+        body: JSON.stringify({ 
+          user: {
+            email,
+            password
+          }
+        }),
       });
+      
+      console.log('Login response status:', response.status);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Falha na autenticação');
+      let responseData;
+      try {
+        responseData = await response.json();
+        console.log('Login response data:', responseData);
+      } catch (e) {
+        const errorText = await response.text();
+        console.error('Failed to parse response as JSON:', errorText);
+        throw new Error('Falha na autenticação: resposta inválida do servidor');
       }
 
-      const data = await response.json();
-      setUser(data.user);
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Falha na autenticação');
+      }
 
-      if (data.user.user_type === 'patient') {
+      const userData = responseData.data?.user || responseData.user;
+      const token = responseData.token;
+      
+      if (!userData) {
+        console.error('No user data found in response:', responseData);
+        throw new Error('Dados de usuário não encontrados na resposta');
+      }
+      
+      console.log('Setting user data:', userData);
+      console.log('Token received:', token ? 'Token present' : 'No token');
+      
+      if (token) {
+        localStorage.setItem('auth_token', token);
+      }
+      
+      setUser(userData);
+
+      if (userData.user_type === 'patient') {
         router.push('/patient/dashboard');
       } else {
         router.push('/providers/dashboard');
@@ -76,26 +131,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (userData: any, userType: 'patient' | 'provider') => {
+  const register = async (userFormData: any, userType: 'patient' | 'provider') => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/register', {
+      console.log('Registering user with data:', { ...userFormData, userType });
+      
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify({ ...userData, userType }),
+        credentials: 'include',
+        body: JSON.stringify({ ...userFormData, userType }),
       });
 
+      console.log('Registration response status:', response.status);
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Falha no registro');
+        let errorMessage = 'Falha no registro';
+        let errorDetails = {};
+        
+        try {
+          const errorData = await response.json();
+          console.log('Error response data:', errorData);
+          errorMessage = errorData.error || errorData.status?.message || errorMessage;
+          errorDetails = errorData.errors || {};
+        } catch (e) {
+          const errorText = await response.text();
+          console.error('Failed to parse error response as JSON:', errorText);
+        }
+        
+        console.error('Registration failed with error:', errorMessage, errorDetails);
+        return; // Return instead of throwing to prevent the error
       }
 
       const data = await response.json();
-      setUser(data.user);
+      console.log('Registration success data:', data);
+      
+      const userData = data.data?.user || data.user;
+      setUser(userData);
 
-      if (data.user.user_type === 'patient') {
+      if (!userData) {
+        console.error('No user data found in response:', data);
+        throw new Error('Dados de usuário não encontrados na resposta');
+      }
+
+      if (userData.user_type === 'patient') {
         router.push('/patient/dashboard');
       } else {
         router.push('/providers/dashboard');
@@ -110,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth', {
+      await fetch('/api/auth/logout', {
         method: 'DELETE',
       });
       setUser(null);

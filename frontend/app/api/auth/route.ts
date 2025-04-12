@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    const response = await fetch(`${API_URL}/api/v1/users/sign_in`, {
+    const response = await fetch(`${API_URL}/api/v1/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
     
-    const response = await fetch(`${API_URL}/api/v1/users/sign_out`, {
+    const response = await fetch(`${API_URL}/api/v1/logout`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -87,27 +87,46 @@ export async function GET(request: NextRequest) {
     const authToken = request.cookies.get('auth_token')?.value;
     
     if (!authToken) {
+      console.log('No auth token found in cookies');
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       );
     }
     
+    console.log('Sending auth/me request to:', `${API_URL}/api/v1/auth/me`);
+    
     const response = await fetch(`${API_URL}/api/v1/auth/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
       },
+      credentials: 'include',
     });
     
-    const data = await response.json();
+    console.log('Auth/me response status:', response.status);
     
     if (!response.ok) {
+      let errorMessage = 'Falha ao obter usuário';
+      
+      try {
+        const errorData = await response.json();
+        console.log('Error response data:', errorData);
+        errorMessage = errorData.status?.message || errorMessage;
+      } catch (e) {
+        const errorText = await response.text();
+        console.error('Failed to parse error response as JSON:', errorText);
+      }
+      
       return NextResponse.json(
-        { error: data.status?.message || 'Falha ao obter usuário' },
+        { error: errorMessage },
         { status: response.status }
       );
     }
+    
+    const data = await response.json();
+    console.log('Auth/me success data:', data);
     
     return NextResponse.json(data.data.user);
   } catch (error) {

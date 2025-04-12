@@ -33,11 +33,16 @@ export async function POST(request: NextRequest) {
       };
     }
     
-    const response = await fetch(`${API_URL}/api/v1/register`, {
+    console.log('Sending registration request to:', `${API_URL}/api/v1/users`);
+    console.log('Request body:', JSON.stringify(requestBody));
+    
+    const response = await fetch(`${API_URL}/api/v1/users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(requestBody),
     });
     
