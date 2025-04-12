@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       },
       credentials: 'include',
       body: JSON.stringify({ 
-        session: {
+        user: {
           email,
           password
         }
