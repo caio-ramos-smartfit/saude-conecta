@@ -81,12 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const userData = responseData.data?.user || responseData.user;
-      setUser(userData);
-
+      
       if (!userData) {
         console.error('No user data found in response:', responseData);
         throw new Error('Dados de usuário não encontrados na resposta');
       }
+      
+      setUser(userData);
 
       if (userData.user_type === 'patient') {
         router.push('/patient/dashboard');
