@@ -116,7 +116,10 @@ Este documento apresenta um checklist detalhado das tabelas de banco de dados ne
 - ✅ **Busca de Profissionais** - Filtro por especialidade, localização e custo
 
 ### Componentes de Interface
-- ⬜ **Menu Superior/Lateral** - Implementar menu com opção de logout
+- ⬜ **Navbar** - Implementar barra de navegação com:
+  - ⬜ Opções "Cadastrar-se" e "Fazer login" para usuários não autenticados
+  - ⬜ Menu de perfil com acesso a dados pessoais para usuários autenticados
+  - ⬜ Opção de logout no menu de perfil
 - ⬜ **Controle de Visibilidade** - Esconder botões de login/cadastro quando usuário estiver logado
 
 ### Páginas com Erros (404)
