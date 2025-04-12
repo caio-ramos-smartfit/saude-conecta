@@ -48,7 +48,17 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     console.log('Auth/me success data:', data);
     
-    return NextResponse.json(data.data.user);
+    if (data && data.data && data.data.user) {
+      return NextResponse.json(data.data.user);
+    } else if (data && data.user) {
+      return NextResponse.json(data.user);
+    } else {
+      console.error('Unexpected data structure:', data);
+      return NextResponse.json(
+        { error: 'Formato de resposta inesperado' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Get user error:', error);
     return NextResponse.json(
