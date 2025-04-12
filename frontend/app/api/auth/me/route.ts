@@ -4,10 +4,17 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export async function GET(request: NextRequest) {
   try {
-    const authToken = request.cookies.get('auth_token')?.value;
+    let authToken = request.cookies.get('auth_token')?.value;
     
     if (!authToken) {
-      console.log('No auth token found in cookies');
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        authToken = authHeader.substring(7);
+      }
+    }
+    
+    if (!authToken) {
+      console.log('No auth token found in cookies or headers');
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
@@ -15,6 +22,7 @@ export async function GET(request: NextRequest) {
     }
     
     console.log('Sending auth/me request to:', `${API_URL}/api/v1/users/me`);
+    console.log('Auth token being sent:', authToken ? 'Token present' : 'No token');
     
     const response = await fetch(`${API_URL}/api/v1/users/me`, {
       method: 'GET',
