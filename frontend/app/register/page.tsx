@@ -16,7 +16,7 @@ import { useToast } from "@/components/ui/use-toast"
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<"patient" | "provider">("patient")
+  const [activeTab, setActiveTab] = useState<"patient" | "provider">("provider")
   
   const [patientData, setPatientData] = useState({
     firstName: "",
