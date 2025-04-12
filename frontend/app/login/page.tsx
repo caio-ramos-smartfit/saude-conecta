@@ -159,28 +159,12 @@ export default function LoginPage() {
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
+        <CardFooter className="flex flex-col">
           <div className="text-center text-sm">
             Não tem uma conta?{" "}
             <Link href="/register" className="text-primary hover:underline">
               Cadastre-se
             </Link>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Ou continue com</span>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="w-full" disabled={isLoading}>
-              Google
-            </Button>
-            <Button variant="outline" className="w-full" disabled={isLoading}>
-              Facebook
-            </Button>
           </div>
         </CardFooter>
       </Card>
