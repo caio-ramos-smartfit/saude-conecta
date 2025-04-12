@@ -43,6 +43,16 @@ export default function ProviderDashboard() {
   }, [user])
 
   const fetchAvailabilities = async () => {
+    if (!user?.provider?.id) {
+      console.error("Erro: ID do provedor não disponível")
+      toast({
+        title: "Erro",
+        description: "Não foi possível identificar seu perfil de profissional.",
+        variant: "destructive",
+      })
+      return
+    }
+    
     try {
       setLoading(true)
       const response = await fetch(`/api/availabilities?providerId=${user.provider.id}`)
@@ -77,6 +87,15 @@ export default function ProviderDashboard() {
 
   const handleAddAvailability = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!user?.provider?.id) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível identificar seu perfil de profissional.",
+        variant: "destructive",
+      })
+      return
+    }
     
     try {
       setLoading(true)
@@ -416,6 +435,15 @@ export default function ProviderDashboard() {
                           variant="destructive" 
                           size="sm"
                           onClick={async () => {
+                            if (!user?.provider?.id) {
+                              toast({
+                                title: "Erro",
+                                description: "Não foi possível identificar seu perfil de profissional.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
                             try {
                               setLoading(true);
                               const response = await fetch(`/api/availabilities?providerId=${user.provider.id}&id=${slot.id}`, {
