@@ -49,9 +49,19 @@ export async function POST(request: NextRequest) {
     
     const authToken = response.headers.get('Authorization') || data.data?.token;
     
+    const userData = data.data?.user || data.user;
+    
+    if (!userData) {
+      console.error('No user data found in response:', data);
+      return NextResponse.json(
+        { error: 'Dados de usuário não encontrados na resposta' },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { 
-        user: data.data?.user,
+        user: userData,
         token: authToken
       },
       { 
