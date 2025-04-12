@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,25 +18,135 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Clock, Plus, Users } from 'lucide-react'
+import { useAuth } from "@/app/context/auth-context"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function ProviderDashboard() {
-  const [newAppointment, setNewAppointment] = useState({
+  const { user } = useAuth()
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
+  const [availabilities, setAvailabilities] = useState([])
+  const [newAvailability, setNewAvailability] = useState({
     date: "",
-    time: "",
+    start_time: "",
+    end_time: "",
     duration: "30",
     cost: "",
+    is_available: true,
     notes: "",
   })
 
-  const handleAppointmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setNewAppointment((prev) => ({ ...prev, [name]: value }))
+  useEffect(() => {
+    if (user?.provider?.id) {
+      fetchAvailabilities()
+    }
+  }, [user])
+
+  const fetchAvailabilities = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/availabilities?providerId=${user.provider.id}`)
+      const data = await response.json()
+      
+      if (response.ok) {
+        setAvailabilities(data.data || [])
+      } else {
+        console.error("Erro ao buscar disponibilidades:", data.error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar suas disponibilidades.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Erro ao buscar disponibilidades:", error)
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar suas disponibilidades.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleAddAppointment = (e: React.FormEvent) => {
+  const handleAvailabilityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setNewAvailability((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleAddAvailability = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Nova consulta:", newAppointment)
-    // Em uma aplicação real, isso adicionaria a consulta ao banco de dados
+    
+    try {
+      setLoading(true)
+      
+      let availabilityData = { ...newAvailability }
+      if (!availabilityData.end_time && availabilityData.start_time) {
+        const [hours, minutes] = availabilityData.start_time.split(':').map(Number)
+        const startDate = new Date()
+        startDate.setHours(hours, minutes, 0)
+        
+        const endDate = new Date(startDate)
+        endDate.setMinutes(endDate.getMinutes() + parseInt(availabilityData.duration))
+        
+        const endHours = endDate.getHours().toString().padStart(2, '0')
+        const endMinutes = endDate.getMinutes().toString().padStart(2, '0')
+        availabilityData.end_time = `${endHours}:${endMinutes}`
+      }
+      
+      const response = await fetch('/api/availabilities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          providerId: user.provider.id,
+          date: availabilityData.date,
+          start_time: availabilityData.start_time,
+          end_time: availabilityData.end_time,
+          is_available: true,
+          cost: availabilityData.cost
+        }),
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        toast({
+          title: "Sucesso",
+          description: "Disponibilidade adicionada com sucesso!",
+        })
+        
+        setNewAvailability({
+          date: "",
+          start_time: "",
+          end_time: "",
+          duration: "30",
+          cost: "",
+          is_available: true,
+          notes: "",
+        })
+        
+        fetchAvailabilities()
+      } else {
+        console.error("Erro ao adicionar disponibilidade:", data.error)
+        toast({
+          title: "Erro",
+          description: data.error || "Não foi possível adicionar a disponibilidade.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar disponibilidade:", error)
+      toast({
+        title: "Erro",
+        description: "Não foi possível adicionar a disponibilidade.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Dados de exemplo para consultas
@@ -114,7 +224,7 @@ export default function ProviderDashboard() {
               <DialogTitle>Adicionar Nova Disponibilidade</DialogTitle>
               <DialogDescription>Crie um novo horário de consulta para pacientes agendarem.</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleAddAppointment}>
+            <form onSubmit={handleAddAvailability}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -124,26 +234,34 @@ export default function ProviderDashboard() {
                       name="date"
                       type="date"
                       required
-                      value={newAppointment.date}
-                      onChange={handleAppointmentChange}
+                      value={newAvailability.date}
+                      onChange={handleAvailabilityChange}
+                      disabled={loading}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="time">Horário</Label>
+                    <Label htmlFor="start_time">Horário de Início</Label>
                     <Input
-                      id="time"
-                      name="time"
+                      id="start_time"
+                      name="start_time"
                       type="time"
                       required
-                      value={newAppointment.time}
-                      onChange={handleAppointmentChange}
+                      value={newAvailability.start_time}
+                      onChange={handleAvailabilityChange}
+                      disabled={loading}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="duration">Duração</Label>
-                    <Select defaultValue={newAppointment.duration}>
+                    <Label htmlFor="duration">Duração (minutos)</Label>
+                    <Select 
+                      defaultValue={newAvailability.duration}
+                      onValueChange={(value) => 
+                        setNewAvailability(prev => ({ ...prev, duration: value }))
+                      }
+                      disabled={loading}
+                    >
                       <SelectTrigger id="duration">
                         <SelectValue placeholder="Selecione a duração" />
                       </SelectTrigger>
@@ -162,8 +280,9 @@ export default function ProviderDashboard() {
                       name="cost"
                       placeholder="Gratuito ou valor em R$"
                       required
-                      value={newAppointment.cost}
-                      onChange={handleAppointmentChange}
+                      value={newAvailability.cost}
+                      onChange={handleAvailabilityChange}
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -173,13 +292,16 @@ export default function ProviderDashboard() {
                     id="notes"
                     name="notes"
                     placeholder="Instruções especiais ou requisitos"
-                    value={newAppointment.notes}
-                    onChange={handleAppointmentChange}
+                    value={newAvailability.notes}
+                    onChange={handleAvailabilityChange}
+                    disabled={loading}
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Adicionar Horário</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Adicionando..." : "Adicionar Horário"}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -265,24 +387,75 @@ export default function ProviderDashboard() {
               <div>Custo</div>
               <div>Ações</div>
             </div>
-            <div className="divide-y">
-              {availableSlots.map((slot) => (
-                <div key={slot.id} className="p-4 grid grid-cols-5 items-center">
-                  <div>{slot.date}</div>
-                  <div>{slot.time}</div>
-                  <div>{slot.duration}</div>
-                  <div>{slot.cost}</div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      Editar
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      Cancelar
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              <div className="p-8 text-center">
+                <p>Carregando disponibilidades...</p>
+              </div>
+            ) : availabilities.length === 0 ? (
+              <div className="p-8 text-center">
+                <p>Nenhuma disponibilidade encontrada.</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Adicione novos horários usando o botão "Adicionar Disponibilidade".
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y">
+                {availabilities.map((slot) => {
+                  const startTime = new Date(`2000-01-01T${slot.start_time}`);
+                  const endTime = new Date(`2000-01-01T${slot.end_time}`);
+                  const durationMinutes = Math.round((endTime - startTime) / 60000);
+                  
+                  return (
+                    <div key={slot.id} className="p-4 grid grid-cols-5 items-center">
+                      <div>{new Date(slot.date).toLocaleDateString('pt-BR')}</div>
+                      <div>{slot.start_time}</div>
+                      <div>{durationMinutes} min</div>
+                      <div>{slot.cost ? `R$${slot.cost}` : 'Gratuito'}</div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              setLoading(true);
+                              const response = await fetch(`/api/availabilities?providerId=${user.provider.id}&id=${slot.id}`, {
+                                method: 'DELETE',
+                              });
+                              
+                              if (response.ok) {
+                                toast({
+                                  title: "Sucesso",
+                                  description: "Disponibilidade removida com sucesso!",
+                                });
+                                fetchAvailabilities();
+                              } else {
+                                const data = await response.json();
+                                toast({
+                                  title: "Erro",
+                                  description: data.error || "Não foi possível remover a disponibilidade.",
+                                  variant: "destructive",
+                                });
+                              }
+                            } catch (error) {
+                              console.error("Erro ao remover disponibilidade:", error);
+                              toast({
+                                title: "Erro",
+                                description: "Não foi possível remover a disponibilidade.",
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setLoading(false);
+                            }
+                          }}
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </TabsContent>
       </Tabs>
