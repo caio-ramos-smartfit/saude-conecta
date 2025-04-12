@@ -19,8 +19,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ 
         user: {
           email,
-          password,
-          user_type: userType
+          password
         }
       }),
     });
