@@ -26,6 +26,7 @@ export default function ProviderDashboard() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [availabilities, setAvailabilities] = useState([])
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [newAvailability, setNewAvailability] = useState({
     date: "",
     start_time: "",
@@ -231,9 +232,9 @@ export default function ProviderDashboard() {
           <h1 className="text-3xl font-bold">Painel do Profissional</h1>
           <p className="text-muted-foreground">Gerencie suas consultas e disponibilidade</p>
         </div>
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => setDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Adicionar Disponibilidade
             </Button>
@@ -243,7 +244,10 @@ export default function ProviderDashboard() {
               <DialogTitle>Adicionar Nova Disponibilidade</DialogTitle>
               <DialogDescription>Crie um novo horário de consulta para pacientes agendarem.</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleAddAvailability}>
+            <form onSubmit={(e) => {
+              handleAddAvailability(e);
+              setDialogOpen(false);
+            }}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
