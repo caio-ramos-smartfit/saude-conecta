@@ -30,7 +30,13 @@ export default function LoginPage() {
     try {
       console.log('Attempting login with:', { email, password })
       console.log('Using login endpoint from auth-context')
+      
+      console.log('Before calling login function')
+      
       await login(email, password)
+      
+      console.log('After login function call - success')
+      
       toast({
         title: "Login realizado com sucesso",
         description: "Você será redirecionado para o painel do profissional.",
@@ -38,6 +44,8 @@ export default function LoginPage() {
       })
     } catch (error) {
       console.error("Erro no login:", error)
+      console.error("Error details:", JSON.stringify(error, null, 2))
+      
       toast({
         title: "Falha no login",
         description: "Email ou senha incorretos. Tente novamente.",
