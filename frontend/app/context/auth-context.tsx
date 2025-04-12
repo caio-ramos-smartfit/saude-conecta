@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Sending login request with:', { email, password });
       console.log('Login endpoint URL:', '/api/v1/login');
       
-      const response = await fetch('/api/v1/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         credentials: 'include',
         body: JSON.stringify({ 
-          session: {
+          user: {
             email,
             password,
             user_type: 'provider'
