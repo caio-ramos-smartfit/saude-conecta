@@ -132,7 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.error('Failed to parse error response as JSON:', errorText);
         }
         
-        throw new Error(errorMessage);
+        console.error('Registration failed with error:', errorMessage, errorDetails);
+        return; // Return instead of throwing to prevent the error
       }
 
       const data = await response.json();
