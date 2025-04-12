@@ -80,9 +80,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(responseData.error || 'Falha na autenticação');
       }
 
-      setUser(responseData.user);
+      const userData = responseData.data?.user || responseData.user;
+      setUser(userData);
 
-      if (responseData.user.user_type === 'patient') {
+      if (!userData) {
+        console.error('No user data found in response:', responseData);
+        throw new Error('Dados de usuário não encontrados na resposta');
+      }
+
+      if (userData.user_type === 'patient') {
         router.push('/patient/dashboard');
       } else {
         router.push('/providers/dashboard');
@@ -95,10 +101,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (userData: any, userType: 'patient' | 'provider') => {
+  const register = async (userFormData: any, userType: 'patient' | 'provider') => {
     setLoading(true);
     try {
-      console.log('Registering user with data:', { ...userData, userType });
+      console.log('Registering user with data:', { ...userFormData, userType });
       
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -107,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ ...userData, userType }),
+        body: JSON.stringify({ ...userFormData, userType }),
       });
 
       console.log('Registration response status:', response.status);
@@ -132,9 +138,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       console.log('Registration success data:', data);
       
-      setUser(data.user);
+      const userData = data.data?.user || data.user;
+      setUser(userData);
 
-      if (data.user.user_type === 'patient') {
+      if (!userData) {
+        console.error('No user data found in response:', data);
+        throw new Error('Dados de usuário não encontrados na resposta');
+      }
+
+      if (userData.user_type === 'patient') {
         router.push('/patient/dashboard');
       } else {
         router.push('/providers/dashboard');
