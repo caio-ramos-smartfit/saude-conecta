@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, userType } = body;
+    const { email, password } = body.user || body;
     
     console.log('Sending login request to:', `${API_URL}/api/v1/login`);
     
