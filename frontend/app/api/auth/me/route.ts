@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    console.log('Sending auth/me request to:', `${API_URL}/api/v1/auth/me`);
+    console.log('Sending auth/me request to:', `${API_URL}/api/v1/users/me`);
     
-    const response = await fetch(`${API_URL}/api/v1/auth/me`, {
+    const response = await fetch(`${API_URL}/api/v1/users/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
