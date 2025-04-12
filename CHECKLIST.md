@@ -64,21 +64,19 @@ Este documento apresenta um checklist detalhado das tabelas de banco de dados ne
   - ⬜ Belongs to: service
 
 ### 5. Availabilities (Disponibilidades)
-⬜ Implementar tabela para horários disponíveis
+✅ Implementar tabela para horários disponíveis
 - **Campos principais**: 
-  - ⬜ id
-  - ⬜ provider_id
-  - ⬜ date
-  - ⬜ start_time
-  - ⬜ end_time
-  - ⬜ duration
-  - ⬜ cost
-  - ⬜ is_booked
-  - ⬜ notes
-  - ⬜ created_at
-  - ⬜ updated_at
+  - ✅ id
+  - ✅ provider_id
+  - ✅ date
+  - ✅ start_time
+  - ✅ end_time
+  - ✅ is_available
+  - ✅ cost
+  - ✅ created_at
+  - ✅ updated_at
 - **Relacionamentos**:
-  - ⬜ Belongs to: provider
+  - ✅ Belongs to: provider
 
 ### 6. Services (Serviços)
 ⬜ Implementar tabela para serviços oferecidos
