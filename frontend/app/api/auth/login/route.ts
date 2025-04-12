@@ -9,11 +9,9 @@ export async function POST(request: NextRequest) {
     
     console.log('Sending login request to:', `${API_URL}/api/v1/login`);
     console.log('Login request body:', JSON.stringify({ 
-      session: {
-        user: {
-          email,
-          password
-        }
+      user: {
+        email,
+        password
       }
     }, null, 2));
     
@@ -25,11 +23,9 @@ export async function POST(request: NextRequest) {
       },
       credentials: 'include',
       body: JSON.stringify({ 
-        session: {
-          user: {
-            email,
-            password
-          }
+        user: {
+          email,
+          password
         }
       }),
     });
