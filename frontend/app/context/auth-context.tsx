@@ -111,9 +111,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       console.log('Setting user data:', userData);
       console.log('Token received:', token ? 'Token present' : 'No token');
+      console.log('Full token value:', token);
       
       if (token) {
+        console.log('Storing auth token in localStorage');
         localStorage.setItem('auth_token', token);
+      } else {
+        console.warn('No token received during login');
       }
       
       setUser(userData);
