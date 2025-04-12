@@ -37,9 +37,11 @@ export default function LoginPage() {
       
       console.log('After login function call - success')
       
+      router.push('/providers/dashboard')
+      
       toast({
         title: "Login realizado com sucesso",
-        description: "Você será redirecionado para o painel do profissional.",
+        description: "Você foi redirecionado para o painel do profissional.",
         variant: "default",
       })
     } catch (error) {
