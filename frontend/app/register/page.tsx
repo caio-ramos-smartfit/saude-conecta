@@ -156,13 +156,13 @@ export default function RegisterPage() {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs 
-            defaultValue="patient" 
+            defaultValue="provider" 
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "patient" | "provider")}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="patient">Paciente</TabsTrigger>
+              <TabsTrigger value="patient" disabled>Paciente</TabsTrigger>
               <TabsTrigger value="provider">Profissional</TabsTrigger>
             </TabsList>
             <TabsContent value="patient">
