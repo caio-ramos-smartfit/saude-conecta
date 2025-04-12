@@ -78,9 +78,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         credentials: 'include',
         body: JSON.stringify({ 
-          user: {
-            email,
-            password
+          session: {
+            user: {
+              email,
+              password
+            }
           }
         }),
       });
