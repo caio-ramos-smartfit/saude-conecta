@@ -8,6 +8,12 @@ export async function POST(request: NextRequest) {
     const { email, password } = body.user || body;
     
     console.log('Sending login request to:', `${API_URL}/api/v1/login`);
+    console.log('Login request body:', JSON.stringify({ 
+      user: {
+        email,
+        password
+      }
+    }, null, 2));
     
     const response = await fetch(`${API_URL}/api/v1/login`, {
       method: 'POST',

@@ -25,6 +25,14 @@ export async function GET(request: NextRequest) {
     
     console.log('Sending auth/me request to:', `${API_URL}/api/v1/auth/me`);
     console.log('Auth token being sent:', authToken ? 'Token present' : 'No token');
+    console.log('Full auth token value:', authToken);
+    
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    console.log('Request headers:', headers);
     
     const response = await fetch(`${API_URL}/api/v1/auth/me`, {
       method: 'GET',
