@@ -47,7 +47,13 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     console.log('Login success data:', data);
     
-    const authToken = response.headers.get('Authorization') || data.data?.token;
+    let authToken = response.headers.get('Authorization') || data.data?.token || data.token;
+    
+    if (authToken && authToken.startsWith('Bearer ')) {
+      authToken = authToken.substring(7);
+    }
+    
+    console.log('Auth token extracted:', authToken ? 'Token found' : 'No token found');
     
     const userData = data.data?.user || data.user;
     
