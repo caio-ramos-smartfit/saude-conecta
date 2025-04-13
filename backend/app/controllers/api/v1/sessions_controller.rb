@@ -1,6 +1,7 @@
 class Api::V1::SessionsController < Devise::SessionsController
   include Swagger::Blocks
   respond_to :json
+  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }
 
   swagger_path '/login' do
     operation :post do
@@ -87,6 +88,23 @@ class Api::V1::SessionsController < Devise::SessionsController
         end
       end
     end
+  end
+
+  def create
+    Rails.logger.debug "Login request received: #{params.inspect}"
+    
+    self.resource = warden.authenticate!(auth_options)
+    sign_in(resource_name, resource)
+    
+    Rails.logger.debug "User authenticated: #{resource.inspect}"
+    Rails.logger.debug "JWT token: #{request.env['warden-jwt_auth.token']}"
+    
+    respond_with(resource)
+  rescue => e
+    Rails.logger.error "Login error: #{e.message}"
+    render json: {
+      status: { code: 401, message: 'Credenciais inválidas.' }
+    }, status: :unauthorized
   end
 
   private
