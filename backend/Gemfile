@@ -37,10 +37,13 @@ gem "rack-cors"
 
 # Authentication
 gem "devise"
-gem "devise-jwt"
+gem "devise-jwt", "~> 0.10.0"
 
 # Serialization
 gem "active_model_serializers", "~> 0.10.0"
+
+# API Documentation
+gem 'swagger-blocks'
 
 # Testing
 group :development, :test do
@@ -58,6 +61,3 @@ end
 
 
 gem "rswag", "~> 2.16"
-
-gem "rswag-api", "~> 2.16"
-gem "rswag-ui", "~> 2.16"

@@ -1,0 +1,350 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "SaúdeConecta API",
+    "description": "API para o aplicativo SaúdeConecta",
+    "contact": {
+      "name": "SaúdeConecta Team"
+    }
+  },
+  "basePath": "/api/v1",
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT token de autenticação. Exemplo: Bearer {token}"
+    }
+  },
+  "tags": [
+    {
+      "name": "authentication",
+      "description": "Operações de autenticação"
+    },
+    {
+      "name": "users",
+      "description": "Operações de usuários"
+    },
+    {
+      "name": "providers",
+      "description": "Operações de profissionais"
+    },
+    {
+      "name": "availabilities",
+      "description": "Operações de disponibilidade"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Login de usuário",
+        "description": "Autentica um usuário e retorna um token JWT",
+        "operationId": "loginUser",
+        "tags": [
+          "authentication"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "Credenciais do usuário",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginParams"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "Registro de usuário",
+        "description": "Registra um novo usuário e retorna um token JWT",
+        "operationId": "registerUser",
+        "tags": [
+          "authentication"
+        ],
+        "parameters": [
+          {
+            "name": "registration",
+            "in": "body",
+            "description": "Dados de registro do usuário",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegistrationParams"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro realizado com sucesso",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "422": {
+            "description": "Dados inválidos",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Dados do usuário autenticado",
+        "description": "Retorna os dados do usuário autenticado",
+        "operationId": "getCurrentUser",
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "Bearer": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do usuário obtidos com sucesso",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "401": {
+            "description": "Não autenticado",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LoginParams": {
+      "properties": {
+        "user": {
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "example": "usuario@exemplo.com"
+            },
+            "password": {
+              "type": "string",
+              "format": "password",
+              "example": "senha123"
+            }
+          }
+        }
+      }
+    },
+    "RegistrationParams": {
+      "properties": {
+        "user": {
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "example": "usuario@exemplo.com"
+            },
+            "password": {
+              "type": "string",
+              "format": "password",
+              "example": "senha123"
+            },
+            "password_confirmation": {
+              "type": "string",
+              "format": "password",
+              "example": "senha123"
+            },
+            "user_type": {
+              "type": "string",
+              "enum": [
+                "provider"
+              ],
+              "example": "provider"
+            }
+          }
+        },
+        "provider": {
+          "properties": {
+            "organization_name": {
+              "type": "string",
+              "example": "Clínica Exemplo"
+            },
+            "contact_name": {
+              "type": "string",
+              "example": "Dr. João Silva"
+            },
+            "specialty": {
+              "type": "string",
+              "example": "Cardiologia"
+            },
+            "address": {
+              "type": "string",
+              "example": "Rua Exemplo, 123"
+            },
+            "phone": {
+              "type": "string",
+              "example": "(11) 99999-9999"
+            }
+          }
+        }
+      }
+    },
+    "LoginResponse": {
+      "properties": {
+        "status": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "Login realizado com sucesso."
+            }
+          }
+        },
+        "data": {
+          "properties": {
+            "user": {
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "email": {
+                  "type": "string",
+                  "example": "usuario@exemplo.com"
+                },
+                "user_type": {
+                  "type": "string",
+                  "example": "provider"
+                }
+              }
+            },
+            "token": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9..."
+            }
+          }
+        }
+      }
+    },
+    "UserResponse": {
+      "properties": {
+        "status": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "Dados do usuário obtidos com sucesso."
+            }
+          }
+        },
+        "data": {
+          "properties": {
+            "user": {
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "email": {
+                  "type": "string",
+                  "example": "usuario@exemplo.com"
+                },
+                "user_type": {
+                  "type": "string",
+                  "example": "provider"
+                },
+                "profile": {
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "organization_name": {
+                      "type": "string",
+                      "example": "Clínica Exemplo"
+                    },
+                    "contact_name": {
+                      "type": "string",
+                      "example": "Dr. João Silva"
+                    },
+                    "specialty": {
+                      "type": "string",
+                      "example": "Cardiologia"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "Rua Exemplo, 123"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "example": "(11) 99999-9999"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "properties": {
+        "status": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "example": 401
+            },
+            "message": {
+              "type": "string",
+              "example": "Credenciais inválidas."
+            }
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": [
+            "Email ou senha inválidos"
+          ]
+        }
+      }
+    }
+  }
+}
