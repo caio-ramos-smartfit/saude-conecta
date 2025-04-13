@@ -1,7 +1,6 @@
 class Api::V1::SessionsController < Devise::SessionsController
   include Swagger::Blocks
   respond_to :json
-  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }
 
   swagger_path '/login' do
     operation :post do
