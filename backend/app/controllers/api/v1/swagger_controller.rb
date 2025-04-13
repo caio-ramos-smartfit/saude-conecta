@@ -33,7 +33,7 @@ module Api
       def json
         swagger_classes = [
           self.class,
-          Api::V1::Users::MeController,
+          Api::V1::UsersController,
           Api::V1::SessionsController,
           Api::V1::RegistrationsController
         ]
