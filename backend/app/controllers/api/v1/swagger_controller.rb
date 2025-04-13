@@ -31,7 +31,11 @@ module Api
       end
 
       def json
-        swagger_data = Swagger::Blocks.build_root_json([self.class])
+        swagger_classes = [
+          self.class,
+          Api::V1::Users::MeController
+        ]
+        swagger_data = Swagger::Blocks.build_root_json(swagger_classes)
         render json: swagger_data
       end
     end
