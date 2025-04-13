@@ -1,0 +1,271 @@
+---
+openapi: 3.0.1
+info:
+  title: SaúdeConecta API
+  version: v1
+  description: API para o aplicativo SaúdeConecta
+paths:
+  "/api/v1/register":
+    post:
+      summary: Registra um novo usuário
+      tags:
+      - Autenticação
+      parameters: []
+      responses:
+        '200':
+          description: Registro realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 200
+                      message:
+                        type: string
+                        example: Registro realizado com sucesso.
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          email:
+                            type: string
+                            example: usuario@exemplo.com
+                          user_type:
+                            type: string
+                            example: provider
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiJ9...
+        '422':
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 422
+                      message:
+                        type: string
+                        example: Erro de validação.
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        items:
+                          type: string
+                          example: já está em uso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: usuario@exemplo.com
+                    password:
+                      type: string
+                      example: senha123
+                    password_confirmation:
+                      type: string
+                      example: senha123
+                    user_type:
+                      type: string
+                      example: provider
+                    provider_profile_attributes:
+                      type: object
+                      properties:
+                        organization_name:
+                          type: string
+                          example: Clínica Exemplo
+                        contact_name:
+                          type: string
+                          example: Dr. Exemplo
+                        specialty:
+                          type: string
+                          example: Cardiologia
+                        address:
+                          type: string
+                          example: Rua Exemplo, 123
+                        phone:
+                          type: string
+                          example: "(11) 99999-9999"
+                  required:
+                  - email
+                  - password
+                  - password_confirmation
+                  - user_type
+  "/api/v1/login":
+    post:
+      summary: Autentica um usuário
+      tags:
+      - Autenticação
+      parameters: []
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 200
+                      message:
+                        type: string
+                        example: Login realizado com sucesso.
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          email:
+                            type: string
+                            example: usuario@exemplo.com
+                          user_type:
+                            type: string
+                            example: provider
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiJ9...
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Credenciais inválidas.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: usuario@exemplo.com
+                    password:
+                      type: string
+                      example: senha123
+                  required:
+                  - email
+                  - password
+  "/api/v1/auth/me":
+    get:
+      summary: Retorna os dados do usuário autenticado
+      tags:
+      - Usuários
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: Dados do usuário obtidos com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 200
+                      message:
+                        type: string
+                        example: Dados do usuário obtidos com sucesso.
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          email:
+                            type: string
+                            example: usuario@exemplo.com
+                          user_type:
+                            type: string
+                            example: provider
+                          profile:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                              organization_name:
+                                type: string
+                                example: Clínica Exemplo
+                              contact_name:
+                                type: string
+                                example: Dr. Exemplo
+                              specialty:
+                                type: string
+                                example: Cardiologia
+                              address:
+                                type: string
+                                example: Rua Exemplo, 123
+                              phone:
+                                type: string
+                                example: "(11) 99999-9999"
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Não autorizado
+components:
+  securitySchemes:
+    Bearer:
+      description: 'JWT token de autenticação. Exemplo: Bearer {token}'
+      type: apiKey
+      name: Authorization
+      in: header
+servers:
+- url: http://localhost:3000
+  description: Servidor de desenvolvimento

@@ -18,18 +18,25 @@ RSpec.configure do |config|
     'v1/swagger.yaml' => {
       openapi: '3.0.1',
       info: {
-        title: 'API V1',
-        version: 'v1'
+        title: 'SaúdeConecta API',
+        version: 'v1',
+        description: 'API para o aplicativo SaúdeConecta'
       },
       paths: {},
+      components: {
+        securitySchemes: {
+          Bearer: {
+            description: "JWT token de autenticação. Exemplo: Bearer {token}",
+            type: :apiKey,
+            name: 'Authorization',
+            in: :header
+          }
+        }
+      },
       servers: [
         {
-          url: 'https://{defaultHost}',
-          variables: {
-            defaultHost: {
-              default: 'www.example.com'
-            }
-          }
+          url: 'http://localhost:3000',
+          description: 'Servidor de desenvolvimento'
         }
       ]
     }
