@@ -12,7 +12,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      post '/register', to: 'users/registrations#create'
+      post '/register', to: 'registrations#create'
+      post '/login', to: 'sessions#create'
+      delete '/logout', to: 'sessions#destroy'
       
       devise_for :users, 
                  controllers: {
@@ -24,7 +26,8 @@ Rails.application.routes.draw do
                    sign_in: 'login',
                    sign_out: 'logout',
                    registration: 'users'
-                 }
+                 },
+                 skip: [:sessions, :registrations]
       
       resources :users, only: [:show, :update]
       
