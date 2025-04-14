@@ -18,7 +18,6 @@ Rails.application.routes.draw do
         delete '/logout', to: 'sessions#destroy'
       end
       
-      post '/api/v1/login', to: 'api/v1/sessions#create'
       
       devise_for :users, 
                  controllers: {
