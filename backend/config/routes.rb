@@ -25,9 +25,9 @@ Rails.application.routes.draw do
                  },
                  skip: [:sessions, :registrations]
                  
-      post '/register', to: 'registrations#create', as: :user_registration
-      post '/login', to: 'sessions#create', as: :user_session
-      delete '/logout', to: 'sessions#destroy', as: :destroy_user_session
+      post '/register', to: 'auth#register', as: :user_registration
+      post '/login', to: 'auth#login', as: :user_session
+      delete '/logout', to: 'auth#logout', as: :destroy_user_session
       
       resources :users, only: [:show, :update]
       
