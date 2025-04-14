@@ -12,13 +12,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      devise_scope :user do
-        post '/register', to: 'registrations#create'
-        post '/login', to: 'sessions#create'
-        delete '/logout', to: 'sessions#destroy'
-      end
-      
-      
       devise_for :users, 
                  controllers: {
                    sessions: 'api/v1/sessions',
@@ -31,6 +24,12 @@ Rails.application.routes.draw do
                    registration: 'users'
                  },
                  skip: [:sessions, :registrations]
+                 
+      devise_scope :user do
+        post '/register', to: 'registrations#create', as: :user_registration
+        post '/login', to: 'sessions#create', as: :user_session
+        delete '/logout', to: 'sessions#destroy', as: :destroy_user_session
+      end
       
       resources :users, only: [:show, :update]
       
