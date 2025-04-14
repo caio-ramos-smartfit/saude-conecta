@@ -12,9 +12,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      post '/register', to: 'registrations#create'
-      post '/login', to: 'sessions#create'
-      delete '/logout', to: 'sessions#destroy'
+      devise_scope :user do
+        post '/register', to: 'registrations#create'
+        post '/login', to: 'sessions#create'
+        delete '/logout', to: 'sessions#destroy'
+      end
+      
+      post '/api/v1/login', to: 'api/v1/sessions#create'
       
       devise_for :users, 
                  controllers: {

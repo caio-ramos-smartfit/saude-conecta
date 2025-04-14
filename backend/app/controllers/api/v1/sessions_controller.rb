@@ -1,8 +1,10 @@
 class Api::V1::SessionsController < Devise::SessionsController
   include Swagger::Blocks
   respond_to :json
+  
+  before_action :set_devise_mapping
 
-  swagger_path '/login' do
+  swagger_path '/api/v1/login' do
     operation :post do
       key :summary, 'Autentica um usuário e retorna um token JWT'
       key :description, 'Endpoint para login de usuários'
@@ -107,6 +109,11 @@ class Api::V1::SessionsController < Devise::SessionsController
   end
 
   private
+  
+  def set_devise_mapping
+    @devise_mapping ||= Devise.mappings[:user]
+    request.env["devise.mapping"] = @devise_mapping
+  end
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
