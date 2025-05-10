@@ -7,9 +7,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body.user || body;
     
-    console.log('Sending login request to:', `${API_URL}/api/v1/users/sign_in`);
+    console.log('Sending login request to:', `${API_URL}/api/v1/login`);
+    console.log('Login request body:', JSON.stringify({ 
+      user: {
+        email,
+        password
+      }
+    }, null, 2));
     
-    const response = await fetch(`${API_URL}/api/v1/users/sign_in`, {
+    const response = await fetch(`${API_URL}/api/v1/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,6 +60,9 @@ export async function POST(request: NextRequest) {
     }
     
     console.log('Auth token extracted:', authToken ? 'Token found' : 'No token found');
+    console.log('Full token value:', authToken);
+    console.log('Full response headers:', Object.fromEntries([...response.headers.entries()]));
+    console.log('Full response data:', data);
     
     const userData = data.data?.user || data.user;
     

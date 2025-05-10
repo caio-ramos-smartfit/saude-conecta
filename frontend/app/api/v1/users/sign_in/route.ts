@@ -7,9 +7,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body.user || body;
     
-    console.log('Sending sign_in request to:', `${API_URL}/api/v1/users/sign_in`);
+    console.log('Sending sign_in request to:', `${API_URL}/api/v1/login`);
+    console.log('Request body:', JSON.stringify({ 
+      user: {
+        email,
+        password
+      }
+    }, null, 2));
     
-    const response = await fetch(`${API_URL}/api/v1/users/sign_in`, {
+    const response = await fetch(`${API_URL}/api/v1/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

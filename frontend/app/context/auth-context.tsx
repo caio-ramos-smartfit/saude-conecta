@@ -38,10 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         
         console.log('Checking authentication with stored token');
+        console.log('Token value:', token);
         
         const response = await fetch('/api/auth/me', {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
           }
         });
         
@@ -68,9 +71,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       console.log('Sending login request with:', { email, password });
-      console.log('Login endpoint URL:', '/api/auth/login');
+      console.log('Login endpoint URL:', '/api/v1/login');
       
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/v1/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ 
           user: {
             email,
-            password
+            password,
+            user_type: 'provider'
           }
         }),
       });
@@ -111,9 +115,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       console.log('Setting user data:', userData);
       console.log('Token received:', token ? 'Token present' : 'No token');
+      console.log('Full token value:', token);
       
       if (token) {
+        console.log('Storing auth token in localStorage');
         localStorage.setItem('auth_token', token);
+      } else {
+        console.warn('No token received during login');
       }
       
       setUser(userData);
@@ -170,6 +178,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Registration success data:', data);
       
       const userData = data.data?.user || data.user;
+      const token = data.token || data.data?.token;
+      
+      console.log('Setting user data after registration:', userData);
+      console.log('Token received after registration:', token ? 'Token present' : 'No token');
+      
+      if (token) {
+        console.log('Storing auth token in localStorage');
+        localStorage.setItem('auth_token', token);
+      } else {
+        console.warn('No token received after registration');
+      }
+      
       setUser(userData);
 
       if (!userData) {
@@ -177,11 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Dados de usuário não encontrados na resposta');
       }
 
-      if (userData.user_type === 'patient') {
-        router.push('/patient/dashboard');
-      } else {
-        router.push('/providers/dashboard');
-      }
+      router.push('/providers/dashboard');
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -195,6 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await fetch('/api/auth/logout', {
         method: 'DELETE',
       });
+      localStorage.removeItem('auth_token');
       setUser(null);
       router.push('/');
     } catch (error) {

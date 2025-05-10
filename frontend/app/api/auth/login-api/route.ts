@@ -6,11 +6,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    const response = await fetch(`${API_URL}/api/v1/login`, {
+    console.log('Sending login request to:', `${API_URL}/api/v1/users/sign_in`);
+    console.log('Login request body:', JSON.stringify({ user: body }, null, 2));
+    
+    const response = await fetch(`${API_URL}/api/v1/users/sign_in`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({ user: body }),
     });
     
