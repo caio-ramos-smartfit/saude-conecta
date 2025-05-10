@@ -5,9 +5,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, userType } = body;
+    const { email, password } = body.user || body;
     
     console.log('Sending login request to:', `${API_URL}/api/v1/login`);
+    console.log('Login request body:', JSON.stringify({ 
+      user: {
+        email,
+        password
+      }
+    }, null, 2));
     
     const response = await fetch(`${API_URL}/api/v1/login`, {
       method: 'POST',
@@ -47,11 +53,30 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     console.log('Login success data:', data);
     
-    const authToken = response.headers.get('Authorization') || data.data?.token;
+    let authToken = response.headers.get('Authorization') || data.data?.token || data.token;
+    
+    if (authToken && authToken.startsWith('Bearer ')) {
+      authToken = authToken.substring(7);
+    }
+    
+    console.log('Auth token extracted:', authToken ? 'Token found' : 'No token found');
+    console.log('Full token value:', authToken);
+    console.log('Full response headers:', Object.fromEntries([...response.headers.entries()]));
+    console.log('Full response data:', data);
+    
+    const userData = data.data?.user || data.user;
+    
+    if (!userData) {
+      console.error('No user data found in response:', data);
+      return NextResponse.json(
+        { error: 'Dados de usuário não encontrados na resposta' },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json(
       { 
-        user: data.data?.user,
+        user: userData,
         token: authToken
       },
       { 

@@ -30,7 +30,7 @@ services:
       - ./backend:/rails
     user: root
     entrypoint: ["/rails/entrypoint.sh"]
-    command: bash -c "cd /rails && bundle install && bundle exec rails db:create db:migrate && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "cd /rails && bundle install && bundle exec rails db:create db:migrate && bundle exec rails s -b 0.0.0.0"
 
   frontend:
     build:

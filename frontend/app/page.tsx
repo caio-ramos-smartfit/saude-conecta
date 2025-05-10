@@ -6,35 +6,6 @@ import HospitalAnimation from "@/components/hospital-animation"
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="border-b w-full">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-6 mx-auto">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Calendar className="h-6 w-6 text-primary" />
-            <span>SaúdeConecta</span>
-          </Link>
-          <nav className="hidden md:flex gap-6">
-            <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4">
-              Recursos
-            </Link>
-            <Link href="#how-it-works" className="text-sm font-medium hover:underline underline-offset-4">
-              Como Funciona
-            </Link>
-            <Link href="#providers" className="text-sm font-medium hover:underline underline-offset-4">
-              Para Profissionais
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="outline" size="sm">
-                Entrar
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm">Cadastrar</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
       <main className="flex-1 w-full">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-muted">
           <div className="container px-4 md:px-6 mx-auto">

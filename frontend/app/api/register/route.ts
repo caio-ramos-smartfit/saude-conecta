@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
       };
     }
     
-    console.log('Sending registration request to:', `${API_URL}/api/v1/register`);
+    console.log('Sending registration request to:', `${API_URL}/api/v1/users`);
     console.log('Request body:', JSON.stringify(requestBody));
     
-    const response = await fetch(`${API_URL}/api/v1/register`, {
+    const response = await fetch(`${API_URL}/api/v1/users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,11 +55,19 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const authToken = response.headers.get('Authorization') || data.data.token;
+    let authToken = response.headers.get('Authorization') || data.data?.token || data.token;
+    
+    if (authToken && authToken.startsWith('Bearer ')) {
+      authToken = authToken.substring(7);
+    }
+    
+    console.log('Auth token extracted from registration response:', authToken ? 'Token found' : 'No token found');
+    console.log('Full response headers:', Object.fromEntries([...response.headers.entries()]));
+    console.log('Full response data:', data);
     
     return NextResponse.json(
       { 
-        user: data.data.user,
+        user: data.data?.user || data.user,
         token: authToken
       },
       { 
